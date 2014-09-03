@@ -152,7 +152,3 @@ obj-$(CONFIG_IR_REMOCON_MC96)		+= irda/
 # SecFilter Driver
 obj-$(CONFIG_SEC_NET_FILTER)	+= secfilter/
 obj-$(CONFIG_FELICA) += felica/
-
-ifeq (1, $(shell if [ -d ./drivers/exfat ]; then echo 1; fi))
-obj-y   += exfat/
-endif
