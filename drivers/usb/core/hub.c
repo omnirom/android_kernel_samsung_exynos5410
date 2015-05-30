@@ -2285,6 +2285,9 @@ static int hub_port_wait_reset(struct usb_hub *hub, int port1,
 				return -ENOTCONN;
 
 			if ((portstatus & USB_PORT_STAT_ENABLE)) {
+				if (!udev)
+					return 0;
+
 				if (hub_is_wusb(hub))
 					udev->speed = USB_SPEED_WIRELESS;
 				else if (hub_is_superspeed(hub->hdev))
@@ -2334,13 +2337,15 @@ static void hub_port_finish_reset(struct usb_hub *hub, int port1,
 			#else
 			msleep(10 + 40);
 			#endif
-			update_devnum(udev, 0);
-			hcd = bus_to_hcd(udev->bus);
-			/* The xHC may think the device is already reset,
-			 * so ignore the status.
-			 */
-			if (hcd->driver->reset_device)
-				hcd->driver->reset_device(hcd, udev);
+			if (udev) {
+				update_devnum(udev, 0);
+				hcd = bus_to_hcd(udev->bus);
+				/* The xHC may think the device is already
+				 * reset, so ignore the status.
+				 */
+				if (hcd->driver->reset_device)
+					hcd->driver->reset_device(hcd, udev);
+			}
 		}
 		/* FALL THROUGH */
 	case -ENOTCONN:
@@ -2354,7 +2359,7 @@ static void hub_port_finish_reset(struct usb_hub *hub, int port1,
 			clear_port_feature(hub->hdev, port1,
 					USB_PORT_FEAT_C_PORT_LINK_STATE);
 		}
-		if (!warm)
+		if (!warm && udev)
 			usb_set_device_state(udev, *status
 					? USB_STATE_NOTATTACHED
 					: USB_STATE_DEFAULT);
