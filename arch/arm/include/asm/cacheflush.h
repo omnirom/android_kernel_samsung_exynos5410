@@ -226,6 +226,7 @@ extern void copy_to_user_page(struct vm_area_struct *, struct page *,
 static inline int flush_cache_level_cpu(void)
 {
 	return flush_cache_level_preferred();
+	dsb();
 }
 /*
  * Flush data cache up to a certain cache level
