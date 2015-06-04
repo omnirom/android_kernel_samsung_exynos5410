@@ -205,7 +205,8 @@ static int ion_page_pool_shrink(struct shrinker *shrinker,
 	bool high;
 	int nr_to_scan = sc->nr_to_scan;
 
-	high = sc->gfp_mask & __GFP_HIGHMEM;
+	if (sc->gfp_mask & __GFP_HIGHMEM)
+		high = true;
 
 	if (current_is_kswapd())
 		high = true;
