@@ -563,15 +563,15 @@ again:
 	/* Find all expired events */
 	for_each_cpu(cpu, tick_broadcast_oneshot_mask) {
 		td = &per_cpu(tick_cpu_device, cpu);
-		if (td->evtdev->next_event.tv64 <= now.tv64)
+		if (td->evtdev->next_event.tv64 <= now.tv64) {
 			cpumask_set_cpu(cpu, tmpmask);
 			/*
 			 * Mark the remote cpu in the pending mask, so
 			 * it can avoid reprogramming the cpu local
 			 * timer in tick_broadcast_oneshot_control().
 			 */
-			cpumask_set_cpu(cpu, tick_broadcast_pending_mask
-		else if (td->evtdev->next_event.tv64 < next_event.tv64)
+			cpumask_set_cpu(cpu, tick_broadcast_pending_mask);
+		} else if (td->evtdev->next_event.tv64 < next_event.tv64)
 			next_event.tv64 = td->evtdev->next_event.tv64;
 	}
 
