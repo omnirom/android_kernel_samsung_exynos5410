@@ -56,6 +56,8 @@ enum clock_event_nofitiers {
 #define CLOCK_EVT_FEAT_C3STOP		0x000008
 #define CLOCK_EVT_FEAT_DUMMY		0x000010
 
+#define CLOCK_EVT_FEAT_PERCPU		0x000040
+
 /*
  * Clockevent device is based on a hrtimer for broadcast
  */
