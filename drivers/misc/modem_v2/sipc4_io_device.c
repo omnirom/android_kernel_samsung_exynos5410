@@ -418,8 +418,8 @@ static int rx_hdlc_data_check(struct io_device *iod, struct link_device *ld,
 		fragdata(iod, ld)->skb_recv = skb;
 	}
 
-	mif_debug("rest : %d, alloc_size : %d , len : %d (%d)\n",
-				rest, alloc_size, skb->len, __LINE__);
+	//mif_debug("rest : %d, alloc_size : %d , len : %d (%d)\n",
+	//			rest, alloc_size, skb->len, __LINE__);
 
 	return done_len;
 }
