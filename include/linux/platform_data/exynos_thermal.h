@@ -81,12 +81,14 @@ enum soc_type {
  */
 struct exynos_tmu_platform_data {
 	u8 threshold;
-	u8 trigger_levels[4];
-	u8 boost_trigger_levels[4];
+	u8 trigger_levels[6];
+	u8 boost_trigger_levels[6];
 	bool trigger_level0_en;
 	bool trigger_level1_en;
 	bool trigger_level2_en;
 	bool trigger_level3_en;
+	bool trigger_level4_en;
+	bool trigger_level5_en;
 
 	u8 gain;
 	u8 reference_voltage;
