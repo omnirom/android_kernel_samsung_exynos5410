@@ -66,18 +66,14 @@ static struct exynos_devfreq_platdata universal5410_qos_int_pd __initdata = {
 
 #ifdef CONFIG_ARM_EXYNOS_IKS_CPUFREQ
 static struct exynos_tmu_platform_data exynos5_tmu_data = {
-	.trigger_levels[0] = 80,
-	.trigger_levels[1] = 85,
-	.trigger_levels[2] = 90,
-	.trigger_levels[3] = 95,
-	.trigger_levels[4] = 100,
-	.trigger_levels[5] = 105,
-	.boost_trigger_levels[0] = 90,
-	.boost_trigger_levels[1] = 95,
-	.boost_trigger_levels[2] = 100,
-	.boost_trigger_levels[3] = 105,
-	.boost_trigger_levels[4] = 110,
-	.boost_trigger_levels[5] = 115,
+	.trigger_levels[0] = 90,
+	.trigger_levels[1] = 95,
+	.trigger_levels[2] = 110,
+	.trigger_levels[3] = 115,
+	.boost_trigger_levels[0] = 100,
+	.boost_trigger_levels[1] = 105,
+	.boost_trigger_levels[2] = 110,
+	.boost_trigger_levels[3] = 115,
 	.trigger_level0_en = 1,
 	.trigger_level1_en = 1,
 	.trigger_level2_en = 1,
@@ -88,56 +84,32 @@ static struct exynos_tmu_platform_data exynos5_tmu_data = {
 	.cal_type = TYPE_ONE_POINT_TRIMMING,
 	.efuse_value = 55,
 	.freq_tab[0] = {
-		.freq_clip_max = 1500 * 1000,
-		.temp_level = 80,
+		.freq_clip_max = 1400 * 1000,
+		.temp_level = 90,
 	},
 	.freq_tab[1] = {
-		.freq_clip_max = 1400 * 1000,
-		.temp_level = 85,
+		.freq_clip_max = 1000 * 1000,
+		.temp_level = 95,
 	},
 	.freq_tab[2] = {
-		.freq_clip_max = 1300 * 1000,
-		.temp_level = 90,
-	},
-	.freq_tab[3] = {
-		.freq_clip_max = 1200 * 1000,
-		.temp_level = 95,
-	},
-	.freq_tab[4] = {
-		.freq_clip_max = 800 * 1000,
-		.temp_level = 100,
-	},
-	.freq_tab[5] = {
 		.freq_clip_max = 600 * 1000,
-		.temp_level = 105,
+		.temp_level = 100,
 	},
 	.boost_freq_tab[0] = {
-		.freq_clip_max = 1500 * 1000,
-		.temp_level = 90,
-	},
-	.boost_freq_tab[1] = {
 		.freq_clip_max = 1400 * 1000,
-		.temp_level = 95,
-	},
-	.boost_freq_tab[2] = {
-		.freq_clip_max = 1300 * 1000,
 		.temp_level = 100,
 	},
-	.boost_freq_tab[3] = {
-		.freq_clip_max = 1200 * 1000,
+	.boost_freq_tab[1] = {
+		.freq_clip_max = 800 * 1000,
 		.temp_level = 105,
 	},
-	.boost_freq_tab[4] = {
+	.boost_freq_tab[2] = {
 		.freq_clip_max = 800 * 1000,
-		.temp_level = 110,
-	},
-	.boost_freq_tab[5] = {
-		.freq_clip_max = 600 * 1000,
-		.temp_level = 115,
+		.temp_level = 105,
 	},
 	.size[THERMAL_TRIP_ACTIVE] = 1,
-	.size[THERMAL_TRIP_PASSIVE] = 5,
-	.freq_tab_count = 6,
+	.size[THERMAL_TRIP_PASSIVE] = 2,
+	.freq_tab_count = 3,
 	.type = SOC_ARCH_EXYNOS5,
 };
 #else
@@ -230,5 +202,6 @@ void __init exynos5_universal5410_power_init(void)
 	sec_gpio_init();
 	sec_config_gpio_table();
 	exynos_set_sleep_gpio_table = sec_config_sleep_gpio_table;
+	exynos_debug_show_gpio = sec_debug_show_gpio;
 #endif
 }
