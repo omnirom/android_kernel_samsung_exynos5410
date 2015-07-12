@@ -483,9 +483,9 @@ int _regmap_write(struct regmap *map, unsigned int reg,
 	int ret;
 	BUG_ON(!map->format.format_write && !map->format.format_val);
 
-	mutex_unlock(&map->lock);
+	mutex_unlock(&map->mutex);
 	arizona_control_regmap_hook(map, reg, &val);
-	mutex_lock(&map->lock);
+	mutex_lock(&map->mutex);
 
 	if (!map->cache_bypass && map->format.format_write) {
 		ret = regcache_write(map, reg, val);
