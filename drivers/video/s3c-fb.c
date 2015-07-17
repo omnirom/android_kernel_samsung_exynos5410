@@ -653,9 +653,9 @@ static int s3c_fb_check_var(struct fb_var_screeninfo *var,
 	case 8:
 		if (sfb->variant.palette[win->index] != 0) {
 			/* non palletised, A:1,R:2,G:3,B:2 mode */
-			var->red.offset		= 0;
+			var->red.offset		= 4;
 			var->green.offset	= 2;
-			var->blue.offset	= 4;
+			var->blue.offset	= 0;
 			var->red.length		= 5;
 			var->green.length	= 3;
 			var->blue.length	= 2;
@@ -677,9 +677,9 @@ static int s3c_fb_check_var(struct fb_var_screeninfo *var,
 		var->bits_per_pixel	= 32;
 
 		/* 666 format */
-		var->red.offset		= 0;
+		var->red.offset		= 12;
 		var->green.offset	= 6;
-		var->blue.offset	= 12;
+		var->blue.offset	= 0;
 		var->red.length		= 6;
 		var->green.length	= 6;
 		var->blue.length	= 6;
@@ -687,9 +687,9 @@ static int s3c_fb_check_var(struct fb_var_screeninfo *var,
 
 	case 16:
 		/* 16 bpp, 565 format */
-		var->red.offset		= 0;
+		var->red.offset		= 11;
 		var->green.offset	= 5;
-		var->blue.offset	= 11;
+		var->blue.offset	= 0;
 		var->red.length		= 5;
 		var->green.length	= 6;
 		var->blue.length	= 5;
@@ -704,11 +704,11 @@ static int s3c_fb_check_var(struct fb_var_screeninfo *var,
 	case 24:
 		/* our 24bpp is unpacked, so 32bpp */
 		var->bits_per_pixel	= 32;
-		var->red.offset		= 0;
+		var->red.offset		= 16;
 		var->red.length		= 8;
 		var->green.offset	= 8;
 		var->green.length	= 8;
-		var->blue.offset	= 16;
+		var->blue.offset	= 0;
 		var->blue.length	= 8;
 		break;
 
@@ -2046,12 +2046,12 @@ static u32 s3c_fb_rgborder(int format)
 	case S3C_FB_PIXEL_FORMAT_RGBX_8888:
 	case S3C_FB_PIXEL_FORMAT_RGBA_8888:
 	case S3C_FB_PIXEL_FORMAT_RGBA_5551:
-		return WIN_RGB_ORDER_BGR;
+		return WIN_RGB_ORDER_RGB;
 
 	case S3C_FB_PIXEL_FORMAT_RGB_565:
 	case S3C_FB_PIXEL_FORMAT_BGRA_8888:
 	case S3C_FB_PIXEL_FORMAT_BGRX_8888:
-		return WIN_RGB_ORDER_RGB;
+		return WIN_RGB_ORDER_BGR;
 
 	default:
 		pr_warn("s3c-fb: unrecognized pixel format %u\n", format);
