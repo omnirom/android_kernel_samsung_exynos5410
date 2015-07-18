@@ -62,7 +62,7 @@
 #define MICRO_FREQUENCY_UP_STEP_LEVEL_L		L_MAX_FREQ
 #define MICRO_FREQUENCY_DOWN_STEP_LEVEL		(250000)
 #define MICRO_FREQUENCY_DOWN_DIFFER_L		(20)
-#define MIN_FREQUENCY_UP_STEP_LEVEL		(250000)
+#define MIN_FREQUENCY_UP_STEP_LEVEL		(500000)
 #define MAX_FREQUENCY_UP_STEP_LEVEL		B_MAX_FREQ
 
 extern unsigned int step_level_CA7_max;
@@ -727,7 +727,6 @@ static struct attribute_group dbs_attr_group = {
 
 static void dbs_freq_increase(struct cpufreq_policy *p, unsigned int freq)
 {
-
 	if (dbs_tuners_ins.powersave_bias)
 		freq = powersave_bias_target(p, freq, CPUFREQ_RELATION_H);
 
@@ -836,6 +835,7 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 		if (load > dbs_tuners_ins.up_threshold) {
 			dbs_freq_increase(policy, policy->cur < dbs_tuners_ins.up_step_level_b ?
 					dbs_tuners_ins.up_step_level_b : policy->max);
+
 			goto exit;
 		}
 	} else {

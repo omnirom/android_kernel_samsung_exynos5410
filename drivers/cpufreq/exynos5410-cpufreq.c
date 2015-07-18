@@ -323,7 +323,7 @@ static unsigned int exynos5410_kpll_pms_table_CA7[CPUFREQ_LEVEL_END_CA7] = {
 };
 
 static unsigned int exynos5410_apll_pms_table_CA15[CPUFREQ_LEVEL_END_CA15] = {
-	/* APLL FOUT L0: 2Hz */
+	/* APLL FOUT L0: 2.0GHz */
 	((250 << 16) | (3 << 8) | (0x0)),
 
 	/* APLL FOUT L1: 1.9GHz */
