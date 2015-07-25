@@ -371,7 +371,7 @@ KBUILD_CFLAGS   := -Wall -Werror -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -std=gnu89 -Wno-error=bool-compare \
 		   -Wno-error=switch-bool -Wno-error=maybe-uninitialized \
-                   -Wno-error=array-bounds
+           -Wno-error=array-bounds -Wno-error=int-conversion
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
