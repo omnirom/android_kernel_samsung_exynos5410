@@ -38,12 +38,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* Creative SB Audigy 2 NX */
 	{ USB_DEVICE(0x041e, 0x3020), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	/* Microsoft Wireless Laser Mouse 6000 Receiver */
-	{ USB_DEVICE(0x045e, 0x00e1), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* Microsoft LifeCam-VX700 v2.0 */
-	{ USB_DEVICE(0x045e, 0x0770), .driver_info = USB_QUIRK_RESET_RESUME },
-
 	/* Logitech Webcam C200 */
 	{ USB_DEVICE(0x046d, 0x0802), .driver_info = USB_QUIRK_RESET_RESUME },
 
@@ -102,37 +96,15 @@ static const struct usb_device_id usb_quirk_list[] = {
 	{ USB_DEVICE(0x04b4, 0x0526), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
-	/* Microchip Joss Optical infrared touchboard device */
-	{ USB_DEVICE(0x04d8, 0x000c), .driver_info =
-			USB_QUIRK_CONFIG_INTF_STRINGS },
-
-	/* CarrolTouch 4000U */
-	{ USB_DEVICE(0x04e7, 0x0009), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* CarrolTouch 4500U */
-	{ USB_DEVICE(0x04e7, 0x0030), .driver_info = USB_QUIRK_RESET_RESUME },
-
 	/* Samsung Android phone modem - ID conflict with SPH-I500 */
 	{ USB_DEVICE(0x04e8, 0x6601), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
-
-	{ USB_DEVICE(0x04f3, 0x009b), .driver_info =
-			USB_QUIRK_DEVICE_QUALIFIER },
-
-	{ USB_DEVICE(0x04f3, 0x016f), .driver_info =
-			USB_QUIRK_DEVICE_QUALIFIER },
 
 	/* Roland SC-8820 */
 	{ USB_DEVICE(0x0582, 0x0007), .driver_info = USB_QUIRK_RESET_RESUME },
 
 	/* Edirol SD-20 */
 	{ USB_DEVICE(0x0582, 0x0027), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* Alcor Micro Corp. Hub */
-	{ USB_DEVICE(0x058f, 0x9254), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* MicroTouch Systems touchscreen */
-	{ USB_DEVICE(0x0596, 0x051e), .driver_info = USB_QUIRK_RESET_RESUME },
 
 	/* appletouch */
 	{ USB_DEVICE(0x05ac, 0x021a), .driver_info = USB_QUIRK_RESET_RESUME },
@@ -167,19 +139,12 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* Broadcom BCM92035DGROM BT dongle */
 	{ USB_DEVICE(0x0a5c, 0x2021), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	/* MAYA44USB sound device */
-	{ USB_DEVICE(0x0a92, 0x0091), .driver_info = USB_QUIRK_RESET_RESUME },
-
 	/* Action Semiconductor flash disk */
 	{ USB_DEVICE(0x10d6, 0x2200), .driver_info =
 			USB_QUIRK_STRING_FETCH_255 },
 
 	/* SKYMEDI USB_DRIVE */
 	{ USB_DEVICE(0x1516, 0x8628), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* Razer - Razer Blade Keyboard */
-	{ USB_DEVICE(0x1532, 0x0116), .driver_info =
-			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
 
 	/* BUILDWIN Photo Frame */
 	{ USB_DEVICE(0x1908, 0x1315), .driver_info =
@@ -208,10 +173,6 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* IMC XMM6360 modem*/
 	{ USB_DEVICE(0x1519, 0x0443),
 		.driver_info = USB_QUIRK_HSIC_TUNE | USB_QUIRK_NO_DPM_RESUME},
-
-	/* Protocol and OTG Electrical Test Device */
-	{ USB_DEVICE(0x1a0a, 0x0200), .driver_info =
-			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
 
 	{ }  /* terminating entry must be last */
 };

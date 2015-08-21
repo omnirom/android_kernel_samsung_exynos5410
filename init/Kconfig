@@ -398,7 +398,6 @@ config AUDIT_LOGINUID_IMMUTABLE
 	  but may not be backwards compatible with older init systems.
 
 source "kernel/irq/Kconfig"
-source "kernel/time/Kconfig"
 
 menu "RCU Subsystem"
 
@@ -572,7 +571,6 @@ config LOG_BUF_SHIFT
 	int "Kernel log buffer size (16 => 64KB, 17 => 128KB)"
 	range 12 21
 	default 17
-	depends on PRINTK
 	help
 	  Select kernel log buffer size as a power of 2.
 	  Examples:
@@ -620,14 +618,6 @@ config CGROUP_FREEZER
 	help
 	  Provides a way to freeze and unfreeze all tasks in a
 	  cgroup.
-
-config CGROUP_TIMER_SLACK
-	bool "Timer slack cgroup controller"
-	help
-	  Provides a way to set minimal timer slack value for tasks in
-	  a cgroup.
-	  It's useful in mobile devices where certain background apps
-	  are attached to a cgroup and combined wakeups are desired.
 
 config CGROUP_DEVICE
 	bool "Device controller for cgroups"
@@ -983,6 +973,7 @@ config PANIC_TIMEOUT
 menuconfig EXPERT
 	bool "Configure standard kernel features (expert users)"
 	# Unhide debug options, to make the on-by-default options visible
+	# We do not select DEBUG_KERNEL
 	help
 	  This option allows certain base kernel options and settings
           to be disabled or tweaked. This is for specialized

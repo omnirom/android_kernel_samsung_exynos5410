@@ -58,7 +58,6 @@ obj-$(CONFIG_BACKTRACE_SELF_TEST) += backtracetest.o
 obj-$(CONFIG_COMPAT) += compat.o
 obj-$(CONFIG_CGROUPS) += cgroup.o
 obj-$(CONFIG_CGROUP_FREEZER) += cgroup_freezer.o
-obj-$(CONFIG_CGROUP_TIMER_SLACK) += cgroup_timer_slack.o
 obj-$(CONFIG_CPUSETS) += cpuset.o
 obj-$(CONFIG_UTS_NS) += utsname.o
 obj-$(CONFIG_USER_NS) += user_namespace.o
@@ -123,8 +122,16 @@ $(obj)/config_data.h: $(obj)/config_data.gz FORCE
 
 $(obj)/time.o: $(obj)/timeconst.h
 
-quiet_cmd_timeconst  = TIMEC   $@
-      cmd_timeconst  = $(PERL) $< $(CONFIG_HZ) > $@
+quiet_cmd_hzfile = HZFILE  $@
+      cmd_hzfile = echo "hz=$(CONFIG_HZ)" > $@
+
+targets += hz.bc
+$(obj)/hz.bc: $(objtree)/include/config/hz.h FORCE
+	$(call if_changed,hzfile)
+
+quiet_cmd_bc  = BC      $@
+      cmd_bc  = bc -q $(filter-out FORCE,$^) > $@
+
 targets += timeconst.h
-$(obj)/timeconst.h: $(src)/timeconst.pl FORCE
-	$(call if_changed,timeconst)
+$(obj)/timeconst.h: $(obj)/hz.bc $(src)/timeconst.bc FORCE
+	$(call if_changed,bc)

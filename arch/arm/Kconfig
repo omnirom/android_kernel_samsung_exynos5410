@@ -1,21 +1,22 @@
 config ARM
 	bool
 	default y
+	select HAVE_AOUT
 	select HAVE_DMA_API_DEBUG
 	select HAVE_IDE if PCI || ISA || PCMCIA
 	select HAVE_MEMBLOCK
 	select RTC_LIB
 	select SYS_SUPPORTS_APM_EMULATION
 	select GENERIC_ATOMIC64 if (CPU_V6 || !CPU_32v6K || !AEABI)
-	select HAVE_OPROFILE if (HAVE_PERF_EVENTS)
+	#select HAVE_OPROFILE if (HAVE_PERF_EVENTS)
 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL
 	select HAVE_ARCH_KGDB
 	select HAVE_KPROBES if !XIP_KERNEL
 	select HAVE_KRETPROBES if (HAVE_KPROBES)
-	select HAVE_FUNCTION_TRACER if (!XIP_KERNEL)
-	select HAVE_FTRACE_MCOUNT_RECORD if (!XIP_KERNEL)
-	select HAVE_DYNAMIC_FTRACE if (!XIP_KERNEL)
-	select HAVE_FUNCTION_GRAPH_TRACER if (!THUMB2_KERNEL)
+	#select HAVE_FUNCTION_TRACER if (!XIP_KERNEL)
+	#select HAVE_FTRACE_MCOUNT_RECORD if (!XIP_KERNEL)
+	#select HAVE_DYNAMIC_FTRACE if (!XIP_KERNEL)
+	#select HAVE_FUNCTION_GRAPH_TRACER if (!THUMB2_KERNEL)
 	select ARCH_BINFMT_ELF_RANDOMIZE_PIE
 	select HAVE_GENERIC_DMA_COHERENT
 	select HAVE_KERNEL_GZIP
@@ -36,9 +37,6 @@ config ARM
 	select CPU_PM if (SUSPEND || CPU_IDLE)
 	select GENERIC_PCI_IOMAP
 	select HAVE_BPF_JIT if NET
-	select GENERIC_STRNCPY_FROM_USER
-	select GENERIC_STRNLEN_USER
-	select DCACHE_WORD_ACCESS if (CPU_V6 || CPU_V6K || CPU_V7) && MMU
 	help
 	  The ARM series is a line of low-power-consumption RISC chip designs
 	  licensed by ARM Ltd and targeted at embedded applications and
@@ -583,7 +581,6 @@ config ARCH_KIRKWOOD
 	bool "Marvell Kirkwood"
 	select CPU_FEROCEON
 	select PCI
-	select PCI_QUIRKS
 	select ARCH_REQUIRE_GPIOLIB
 	select GENERIC_CLOCKEVENTS
 	select NEED_MACH_IO_H
@@ -1446,16 +1443,6 @@ config ARM_ERRATA_774769
 	  affected by this erratum such that no streaming-write ever allocates
 	  into the L2 cache.
 
-config ARM_ERRATA_775420
-       bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
-       depends on CPU_V7
-       help
-	 This option enables the workaround for the 775420 Cortex-A9 (r2p2,
-	 r2p6,r2p8,r2p10,r3p0) erratum. In case a date cache maintenance
-	 operation aborts with MMU exception, it might cause the processor
-	 to deadlock. This workaround puts DSB before executing ISB if
-	 an abort may occur on cache maintenance.
-
 config ARM_ERRATA_798181
 	bool "ARM errata: TLBI/DSB failure on Cortex-A15"
 	depends on CPU_V7 && SMP
@@ -1533,6 +1520,8 @@ source "drivers/pcmcia/Kconfig"
 endmenu
 
 menu "Kernel Features"
+
+source "kernel/time/Kconfig"
 
 config HAVE_SMP
 	bool
@@ -1706,7 +1695,7 @@ config HZ
 	default 100
 
 config SCHED_HRTICK
-	def_bool HIGH_RES_TIMERS
+	def_bool HIGH_RES_TIMERS && (!SMP || USE_GENERIC_SMP_HELPERS)
 
 config THUMB2_KERNEL
 	bool "Compile the kernel in Thumb-2 mode (EXPERIMENTAL)"
@@ -1905,7 +1894,7 @@ config LEDS_CPU
 config ALIGNMENT_TRAP
 	bool
 	depends on CPU_CP15_MMU
-	default n if ARCH_EBSA110
+	default y if !ARCH_EBSA110
 	select HAVE_PROC_CPU if PROC_FS
 	help
 	  ARM processors cannot fetch/store information which is not
@@ -1931,19 +1920,6 @@ config UACCESS_WITH_MEMCPY
 
 	  However, if the CPU data cache is using a write-allocate mode,
 	  this option is unlikely to provide any performance gain.
-
-config ARM_PLD_64BYTE
-	bool "Use 64-bit preload size for kernel memory copy"
-	depends on CPU_V7
-	help
-	  Config preload size for memcpy, selecting this for Cortex-A15
-
-config USE_LDRDSTRD_OVER_LDMSTM
-	bool "Use 64-bit access instructions to optimize memory copy"
-	depends on CPU_V7
-	help
-	  Cortex-A15 perform better when use LDRD/STRD to access memory.
-	  Selecting this to optimize memory copy routines.
 
 config SECCOMP
 	bool
@@ -1998,21 +1974,6 @@ config USE_OF
 	select IRQ_DOMAIN
 	help
 	  Include support for flattened device tree machine descriptions.
-
-config BUILD_ARM_APPENDED_DTB_IMAGE
-	bool "Build a concatenated zImage/dtb by default"
-	depends on OF
-	help
-	  Enabling this option will cause a concatenated zImage and list of
-	  DTBs to be built by default (instead of a standalone zImage.)
-	  The image will built in arch/arm/boot/zImage-dtb
-
-config BUILD_ARM_APPENDED_DTB_IMAGE_NAMES
-	string "Default dtb names"
-	depends on BUILD_ARM_APPENDED_DTB_IMAGE
-	help
-	  Space separated list of names of dtbs to append when
-	  building a concatenated zImage-dtb.
 
 # Compressed boot loader in ROM.  Yes, we really want to ask about
 # TEXT and BSS so we preserve their values in the config files.
@@ -2230,7 +2191,6 @@ source "drivers/cpufreq/Kconfig"
 config CPU_FREQ_IMX
 	tristate "CPUfreq driver for i.MX CPUs"
 	depends on ARCH_MXC && CPU_FREQ
-	select CPU_FREQ_TABLE
 	help
 	  This enables the CPUfreq driver for i.MX CPUs.
 

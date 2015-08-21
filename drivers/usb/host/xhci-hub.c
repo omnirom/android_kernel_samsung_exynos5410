@@ -297,7 +297,7 @@ static int xhci_stop_device(struct xhci_hcd *xhci, int slot_id, int suspend)
 		if (virt_dev->eps[i].ring && virt_dev->eps[i].ring->dequeue)
 			xhci_queue_stop_endpoint(xhci, slot_id, i, suspend);
 	}
-	cmd->command_trb = xhci_find_next_enqueue(xhci->cmd_ring);
+	cmd->command_trb = xhci->cmd_ring->enqueue;
 	list_add_tail(&cmd->cmd_list, &virt_dev->cmd_list);
 	xhci_queue_stop_endpoint(xhci, slot_id, 0, suspend);
 	xhci_ring_cmd_db(xhci);
@@ -393,10 +393,6 @@ static void xhci_clear_port_change_bit(struct xhci_hcd *xhci, u16 wValue,
 		status = PORT_PLC;
 		port_change_bit = "link state";
 		break;
-	case USB_PORT_FEAT_C_PORT_CONFIG_ERROR:
-		status = PORT_CEC;
-		port_change_bit = "config error";
-		break;
 	default:
 		/* Should never happen */
 		return;
@@ -477,8 +473,7 @@ void xhci_test_and_clear_bit(struct xhci_hcd *xhci, __le32 __iomem **port_array,
 }
 
 /* Updates Link Status for super Speed port */
-static void xhci_hub_report_link_state(struct xhci_hcd *xhci,
-		u32 *status, u32 status_reg)
+static void xhci_hub_report_link_state(u32 *status, u32 status_reg)
 {
 	u32 pls = status_reg & PORT_PLS_MASK;
 
@@ -517,8 +512,7 @@ static void xhci_hub_report_link_state(struct xhci_hcd *xhci,
 		 * in which sometimes the port enters compliance mode
 		 * caused by a delay on the host-device negotiation.
 		 */
-		if ((xhci->quirks & XHCI_COMP_MODE_QUIRK) &&
-				(pls == USB_SS_PORT_LS_COMP_MOD))
+		if (pls == USB_SS_PORT_LS_COMP_MOD)
 			pls |= USB_PORT_STAT_CONNECTION;
 	}
 
@@ -632,8 +626,6 @@ int xhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 				status |= USB_PORT_STAT_C_LINK_STATE << 16;
 			if ((temp & PORT_WRC))
 				status |= USB_PORT_STAT_C_BH_RESET << 16;
-			if ((temp & PORT_CEC))
-				status |= USB_PORT_STAT_C_CONFIG_ERROR << 16;
 		}
 
 		if (hcd->speed != HCD_USB3) {
@@ -699,7 +691,7 @@ int xhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		}
 		/* Update Port Link State for super speed ports*/
 		if (hcd->speed == HCD_USB3) {
-			xhci_hub_report_link_state(xhci, &status, temp);
+			xhci_hub_report_link_state(&status, temp);
 			/*
 			 * Verify if all USB3 Ports Have entered U0 already.
 			 * Delete Compliance Mode Timer if so.
@@ -953,7 +945,6 @@ int xhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		case USB_PORT_FEAT_C_OVER_CURRENT:
 		case USB_PORT_FEAT_C_ENABLE:
 		case USB_PORT_FEAT_C_PORT_LINK_STATE:
-		case USB_PORT_FEAT_C_PORT_CONFIG_ERROR:
 			xhci_clear_port_change_bit(xhci, wValue, wIndex,
 					port_array[wIndex], temp);
 			break;
@@ -1007,7 +998,7 @@ int xhci_hub_status_data(struct usb_hcd *hcd, char *buf)
 	 */
 	status = bus_state->resuming_ports;
 
-	mask = PORT_CSC | PORT_PEC | PORT_OCC | PORT_PLC | PORT_WRC | PORT_CEC;
+	mask = PORT_CSC | PORT_PEC | PORT_OCC | PORT_PLC | PORT_WRC;
 
 	spin_lock_irqsave(&xhci->lock, flags);
 	/* For each port, did anything change?  If so, set that bit in buf. */

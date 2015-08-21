@@ -55,9 +55,6 @@ unsigned long long notrace sched_clock(void)
 	if (cd.suspended)
 		return cd.epoch_ns;
 
-	if (cd.suspended)
-		return cd.epoch_ns;
-
 	/*
 	 * Load the epoch_cyc and epoch_ns atomically.  We do this by
 	 * ensuring that we always write epoch_cyc, epoch_ns and
@@ -95,11 +92,11 @@ static void notrace update_sched_clock(void)
 	 * detectable in cyc_to_fixed_sched_clock().
 	 */
 	raw_local_irq_save(flags);
-	cd.epoch_cyc_copy = cyc;
+	cd.epoch_cyc = cyc;
 	smp_wmb();
 	cd.epoch_ns = ns;
 	smp_wmb();
-	cd.epoch_cyc = cyc;
+	cd.epoch_cyc_copy = cyc;
 	raw_local_irq_restore(flags);
 }
 

@@ -51,13 +51,7 @@
  * HZ shrinks, so values greater than 8 overflow 32bits when
  * HZ=100.
  */
-#if HZ < 34
-#define JIFFIES_SHIFT	6
-#elif HZ < 67
-#define JIFFIES_SHIFT	7
-#else
 #define JIFFIES_SHIFT	8
-#endif
 
 static cycle_t jiffies_read(struct clocksource *cs)
 {
@@ -73,8 +67,6 @@ struct clocksource clocksource_jiffies = {
 	.shift		= JIFFIES_SHIFT,
 };
 
-__cacheline_aligned_in_smp DEFINE_SEQLOCK(jiffies_lock);
-
 #if (BITS_PER_LONG < 64)
 u64 get_jiffies_64(void)
 {
@@ -82,9 +74,9 @@ u64 get_jiffies_64(void)
 	u64 ret;
 
 	do {
-		seq = read_seqbegin(&jiffies_lock);
+		seq = read_seqbegin(&xtime_lock);
 		ret = jiffies_64;
-	} while (read_seqretry(&jiffies_lock, seq));
+	} while (read_seqretry(&xtime_lock, seq));
 	return ret;
 }
 EXPORT_SYMBOL(get_jiffies_64);

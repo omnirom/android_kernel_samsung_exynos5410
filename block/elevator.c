@@ -638,7 +638,7 @@ void __elv_add_request(struct request_queue *q, struct request *rq, int where)
 	if (rq->cmd_flags & REQ_SOFTBARRIER) {
 		/* barriers are scheduling boundary, update end_sector */
 		if (rq->cmd_type == REQ_TYPE_FS ||
-		    (rq->cmd_flags & REQ_DISCARD)) {
+		    (rq->cmd_flags & (REQ_DISCARD | REQ_SANITIZE))) {
 			q->end_sector = rq_end_sector(rq);
 			q->boundary_rq = rq;
 		}
@@ -791,6 +791,7 @@ void elv_completed_request(struct request_queue *q, struct request *rq)
 
 	if (rq->cmd_flags & REQ_URGENT) {
 		q->notified_urgent = false;
+		WARN_ON(!q->dispatched_urgent);
 		q->dispatched_urgent = false;
 	}
 	/*
@@ -1011,7 +1012,7 @@ fail_register:
 /*
  * Switch this queue to the given IO scheduler.
  */
-static int __elevator_change(struct request_queue *q, const char *name)
+int elevator_change(struct request_queue *q, const char *name)
 {
 	char elevator_name[ELV_NAME_MAX];
 	struct elevator_type *e;
@@ -1033,18 +1034,6 @@ static int __elevator_change(struct request_queue *q, const char *name)
 
 	return elevator_switch(q, e);
 }
-
-int elevator_change(struct request_queue *q, const char *name)
-{
-	int ret;
-
-	/* Protect q->elevator from elevator_init() */
-	mutex_lock(&q->sysfs_lock);
-	ret = __elevator_change(q, name);
-	mutex_unlock(&q->sysfs_lock);
-
-	return ret;
-}
 EXPORT_SYMBOL(elevator_change);
 
 ssize_t elv_iosched_store(struct request_queue *q, const char *name,
@@ -1055,7 +1044,7 @@ ssize_t elv_iosched_store(struct request_queue *q, const char *name,
 	if (!q->elevator)
 		return count;
 
-	ret = __elevator_change(q, name);
+	ret = elevator_change(q, name);
 	if (!ret)
 		return count;
 

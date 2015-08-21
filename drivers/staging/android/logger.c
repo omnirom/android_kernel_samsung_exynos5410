@@ -29,8 +29,9 @@
 
 #include <asm/ioctls.h>
 
-static unsigned int enabled = 1;
-module_param(enabled, uint, S_IWUSR | S_IRUGO);
+#ifndef CONFIG_LOGCAT_SIZE
+#define CONFIG_LOGCAT_SIZE 256
+#endif
 
 /*
  * struct logger_log - represents a specific log, such as 'main' or 'radio'
@@ -469,9 +470,6 @@ ssize_t logger_aio_write(struct kiocb *iocb, const struct iovec *iov,
 	struct timespec now;
 	ssize_t ret = 0;
 
-	if (!enabled)
-		return 0;
-
 	now = current_kernel_time();
 
 	header.pid = current->tgid;
@@ -688,11 +686,6 @@ static long logger_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = -EBADF;
 			break;
 		}
-		if (!(in_egroup_p(file->f_dentry->d_inode->i_gid) ||
-				capable(CAP_SYSLOG))) {
-			ret = -EPERM;
-			break;
-		}
 		list_for_each_entry(reader, &log->readers, list)
 			reader->r_off = log->w_off;
 		log->head = log->w_off;
@@ -755,11 +748,11 @@ static struct logger_log VAR = { \
 	.size = SIZE, \
 };
 
-DEFINE_LOGGER_DEVICE(log_main, LOGGER_LOG_MAIN, 2048*1024)
-DEFINE_LOGGER_DEVICE(log_events, LOGGER_LOG_EVENTS, 256*1024)
-DEFINE_LOGGER_DEVICE(log_radio, LOGGER_LOG_RADIO, 2048*1024)
-DEFINE_LOGGER_DEVICE(log_system, LOGGER_LOG_SYSTEM, 256*1024)
-DEFINE_LOGGER_DEVICE(log_sf, LOGGER_LOG_SF, 256*1024)
+DEFINE_LOGGER_DEVICE(log_main, LOGGER_LOG_MAIN, CONFIG_LOGCAT_SIZE*1024)
+DEFINE_LOGGER_DEVICE(log_events, LOGGER_LOG_EVENTS, CONFIG_LOGCAT_SIZE*1024)
+DEFINE_LOGGER_DEVICE(log_radio, LOGGER_LOG_RADIO, CONFIG_LOGCAT_SIZE*1024)
+DEFINE_LOGGER_DEVICE(log_system, LOGGER_LOG_SYSTEM, CONFIG_LOGCAT_SIZE*1024)
+DEFINE_LOGGER_DEVICE(log_sf, LOGGER_LOG_SF, CONFIG_LOGCAT_SIZE*1024)
 
 static struct logger_log *get_log_from_minor(int minor)
 {
